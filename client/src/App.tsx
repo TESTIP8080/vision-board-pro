@@ -275,7 +275,7 @@ function App() {
           </div>
         </div>
         {/* Форма ввода задачи — отдельная карточка снизу */}
-        <div className="fixed bottom-4 left-1/2 -translate-x-1/2 w-full max-w-xl px-2 z-50 flex items-end">
+        <div className="fixed bottom-20 left-1/2 -translate-x-1/2 w-full max-w-xl px-2 z-50 flex items-end">
           <form onSubmit={handleAddTask} className="flex gap-2 bg-white rounded-2xl shadow-lg border border-[#ececec] px-4 py-3 flex-1">
             <input
               type="text"
@@ -293,8 +293,8 @@ function App() {
               Добавить
             </button>
           </form>
-          {/* Микрофон — маленький и сдвинутый */}
-          <div className="ml-2 mb-1">
+          {/* Микрофон — маленький и сдвинутый выше */}
+          <div className="ml-2 mb-10">
             <VoiceButton onResult={handleNewTaskFromVoice} isProcessing={isProcessing} />
           </div>
         </div>
