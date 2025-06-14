@@ -22,20 +22,18 @@ export function TaskCard({ task, onToggleDone, onDelete }: TaskCardProps) {
         rotate: task.rotation,
         scale: task.scale,
       }}
-      className={`relative rounded-3xl overflow-hidden shadow-2xl group cursor-pointer w-[280px] h-[280px] sm:w-60 sm:h-60 bg-white/30 backdrop-blur-xl border border-white/30 transition-all duration-300 hover:scale-105 hover:shadow-2xl`}
+      className={`relative rounded-xl overflow-hidden group cursor-pointer w-[280px] h-[280px] sm:w-60 sm:h-60 bg-white border-4 border-[#ff4c00] transition-all duration-200 hover:scale-105`}
       onClick={() => onToggleDone(task.id)}
     >
       {/* Кнопка-гвоздик */}
-      <div className="absolute top-[-8px] left-1/2 -translate-x-1/2 w-6 h-6 bg-red-500 rounded-full shadow-md border-2 border-white z-10"></div>
+      <div className="absolute top-[-10px] left-1/2 -translate-x-1/2 w-7 h-7 bg-[#ff4c00] rounded-full border-4 border-white z-10"></div>
       {/* Кнопка удаления */}
       <button
-        className="absolute top-2 right-2 z-20 w-7 h-7 bg-red-600 rounded-full flex items-center justify-center hover:bg-red-700 text-white shadow-lg transition"
+        className="absolute top-2 right-2 z-20 w-8 h-8 bg-[#ff4c00] rounded-full flex items-center justify-center hover:bg-[#ff7f50] text-white font-bold text-xl transition border-2 border-white"
         onClick={e => { e.stopPropagation(); onDelete(task.id); }}
         aria-label="Удалить задачу"
       >
-        <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-        </svg>
+        ×
       </button>
       <img 
         src={task.imageUrl} 

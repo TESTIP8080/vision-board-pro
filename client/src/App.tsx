@@ -230,15 +230,12 @@ function App() {
           )}
         </div>
       )}
-      <header className="absolute top-4 left-6 z-50">
-        <span className="text-xl font-extrabold tracking-tight text-white/80 drop-shadow-lg select-none" style={{letterSpacing: '0.04em'}}>VisionBoard</span>
+      <header className="absolute top-6 left-8 z-50">
+        <span className="text-5xl font-extrabold tracking-tight text-[#ff4c00] select-none" style={{letterSpacing: '0.04em', fontFamily: 'Arial Black, Arial, sans-serif'}}>VisionBoard</span>
       </header>
       
       {/* Основная часть, где будут задачи */}
-      <main className="relative min-h-screen flex flex-col justify-center items-center overflow-x-hidden">
-        {/* Animated gradient background */}
-        <div className="fixed inset-0 -z-10 animate-gradient bg-gradient-to-tr from-blue-400 via-fuchsia-300 to-cyan-400 opacity-90" style={{backgroundSize:'200% 200%'}} />
-        <div className="fixed inset-0 -z-20 bg-gradient-to-br from-white/60 to-white/10 backdrop-blur-2xl" />
+      <main className="relative min-h-screen flex flex-col justify-center items-center overflow-x-hidden bg-[#fdf6ee]">
         <div className="max-w-7xl w-full px-2 sm:px-8 mx-auto">
           {/* Календарь: сверху на мобильных, сбоку на десктопе */}
           <div className="block sm:hidden mb-4">
@@ -250,10 +247,10 @@ function App() {
             </div>
             <div className="flex-1">
               {/* Форма для текстового ввода задачи */}
-              <form onSubmit={handleAddTask} className="flex gap-2 mb-4 max-w-xl mx-auto bg-white/40 backdrop-blur-xl rounded-2xl shadow-xl border border-white/30 px-4 py-3 transition-all duration-300">
+              <form onSubmit={handleAddTask} className="flex gap-2 mb-4 max-w-xl mx-auto bg-white rounded-xl border-4 border-[#ff4c00] px-4 py-3">
                 <input
                   type="text"
-                  className="flex-1 rounded-lg px-4 py-2 border border-slate-300 focus:outline-none focus:ring-2 focus:ring-blue-400 text-black bg-white/70 backdrop-blur placeholder:text-slate-400"
+                  className="flex-1 rounded-lg px-4 py-2 border-2 border-[#ff4c00] focus:outline-none focus:ring-2 focus:ring-[#ff4c00] text-black bg-white placeholder:text-[#ff4c00] text-lg font-bold"
                   placeholder="Введите задачу или желание..."
                   value={inputValue}
                   onChange={e => setInputValue(e.target.value)}
@@ -261,7 +258,7 @@ function App() {
                 />
                 <button
                   type="submit"
-                  className="bg-gradient-to-tr from-blue-500 to-fuchsia-400 hover:from-fuchsia-400 hover:to-cyan-400 text-white px-4 py-2 rounded-xl font-semibold shadow-lg transition-all duration-200 disabled:opacity-50"
+                  className="bg-[#ff4c00] hover:bg-[#ff7f50] text-white px-6 py-2 rounded-lg font-extrabold text-lg transition-all duration-200 disabled:opacity-50"
                   disabled={isProcessing || !inputValue.trim()}
                 >
                   Добавить

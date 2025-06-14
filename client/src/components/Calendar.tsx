@@ -30,11 +30,14 @@ export function Calendar({ tasks, onDayClick }: CalendarProps) {
   const taskDates = useMemo(() => tasks.map(t => format(new Date(t.createdAt), 'yyyy-MM-dd')), [tasks]);
 
   return (
-    <div className="bg-white/40 backdrop-blur-xl rounded-3xl shadow-2xl p-6 w-80 max-w-full mx-auto mb-6 border border-white/30 transition-all duration-300">
+    <div className="bg-[#fff] rounded-2xl border-4 border-[#ff4c00] p-6 w-80 max-w-full mx-auto mb-6">
       <div className="flex justify-between items-center mb-2">
-        <span className="font-bold text-lg text-slate-700 drop-shadow">{format(today, 'LLLL yyyy', { locale: ru })}</span>
+        <span className="text-5xl font-extrabold text-[#ff4c00] uppercase tracking-tight leading-none" style={{fontFamily: 'Arial Black, Arial, sans-serif'}}>
+          {format(today, 'LLLL', { locale: ru })}
+        </span>
+        <span className="text-2xl font-bold text-[#222] ml-2 mt-4">{format(today, 'yyyy')}</span>
       </div>
-      <div className="grid grid-cols-7 gap-1 text-center text-xs text-slate-500 mb-1">
+      <div className="grid grid-cols-7 gap-1 text-center text-base font-bold text-[#222] mb-1">
         {['Пн','Вт','Ср','Чт','Пт','Сб','Вс'].map(d => <div key={d}>{d}</div>)}
       </div>
       <div className="grid grid-cols-7 gap-1">
@@ -44,11 +47,11 @@ export function Calendar({ tasks, onDayClick }: CalendarProps) {
           return (
             <button
               key={idx}
-              className={`aspect-square rounded-xl flex items-center justify-center transition-all duration-200 font-semibold
-                ${isToday(day) ? 'bg-blue-500 text-white shadow-lg scale-110' : ''}
-                ${isTaskDay ? 'ring-2 ring-fuchsia-400' : ''}
-                ${!isCurrentMonth ? 'opacity-30' : 'hover:bg-blue-100'}
-                hover:scale-110 hover:bg-blue-100/60 focus:outline-none focus:ring-2 focus:ring-cyan-400
+              className={`aspect-square rounded-none flex items-center justify-center font-extrabold text-lg border-2 border-[#ff4c00] transition-all duration-150
+                ${isToday(day) ? 'bg-[#ff4c00] text-white scale-105' : ''}
+                ${isTaskDay ? 'bg-[#ffe5d0] text-[#ff4c00] border-4' : ''}
+                ${!isCurrentMonth ? 'opacity-30' : 'hover:bg-[#fff0e6]'}
+                hover:scale-110 focus:outline-none
               `}
               onClick={() => onDayClick?.(day)}
               disabled={!isCurrentMonth}
