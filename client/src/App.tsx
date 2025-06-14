@@ -1,0 +1,166 @@
+import { useState, useEffect } from 'react';
+import './index.css'; // Убедимся, что наши Tailwind стили подключены
+import { VoiceButton } from './components/VoiceButton'; // Импортируем нашу кнопку
+import { TaskCard } from './components/TaskCard'; // Импортируем карточку задачи
+import { TaskCardSkeleton } from './components/TaskCardSkeleton'; // Импортируем скелетную карточку
+import { AnimatePresence } from 'framer-motion'; // Импортируем AnimatePresence для анимации
+import type { Task } from './types'; // <-- Импортируем из правильного места!
+import { addDays, isToday } from 'date-fns';
+
+// URL нашего сервера
+const API_URL = 'http://localhost:3001';
+
+// Определяем, как будет выглядеть объект задачи
+export interface Task {
+  id: number;
+  text: string;
+  imageUrl: string;
+  isDone: boolean;
+  rotation: number;
+  scale: number;
+  createdAt: string;
+  completedAt: string | null;
+}
+
+function App() {
+  // Состояние для хранения списка задач
+  const [tasks, setTasks] = useState<Task[]>([]);
+  // Состояние для индикации загрузки (когда генерируется картинка)
+  const [isProcessing, setIsProcessing] = useState(false);
+
+  // Запрос разрешения на уведомления при загрузке
+  useEffect(() => {
+    if ('Notification' in window && Notification.permission !== 'denied') {
+      Notification.requestPermission();
+    }
+  }, []);
+
+  // Функция, которая создает задачу
+  const handleNewTaskFromVoice = async (text: string) => {
+    let taskText = text;
+    let taskDate = new Date(); // По умолчанию - сегодня
+
+    // Простой парсер даты
+    if (text.toLowerCase().includes('завтра')) {
+      taskText = text.replace(/завтра/i, '').trim();
+      taskDate = addDays(new Date(), 1);
+    }
+    if (text.toLowerCase().includes('послезавтра')) {
+      taskText = text.replace(/послезавтра/i, '').trim();
+      taskDate = addDays(new Date(), 2);
+    }
+
+    setIsProcessing(true);
+    try {
+      console.log(`Отправляю на сервер промпт: "${taskText}"`);
+      const response = await fetch(`${API_URL}/api/generate-image`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ prompt: taskText }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Сервер вернул ошибку при генерации изображения');
+      }
+
+      const { imageUrl } = await response.json();
+      console.log(`Получен URL картинки: ${imageUrl}`);
+
+      const newTask: Task = {
+        id: Date.now(),
+        text: taskText,
+        imageUrl: imageUrl,
+        isDone: false,
+        rotation: Math.random() * 10 - 5,
+        scale: Math.random() * 0.1 + 0.95,
+        createdAt: taskDate.toISOString(),
+        completedAt: null,
+      };
+
+      setTasks(prevTasks => [newTask, ...prevTasks]);
+
+      // Показываем уведомление
+      if (Notification.permission === 'granted') {
+        new Notification('Новая задача в VisionBoard!', {
+          body: taskText,
+          icon: imageUrl,
+        });
+      }
+
+    } catch (error) {
+      console.error("Произошла ошибка:", error);
+      alert("Не удалось создать задачу. Проверьте консоль разработчика (F12) и консоль сервера на наличие ошибок.");
+    } finally {
+      setIsProcessing(false);
+    }
+  };
+
+  // Функция для отметки задачи как выполненной
+  const handleToggleDone = (id: number) => {
+    setTasks(currentTasks => 
+      currentTasks.map(task => {
+        if (task.id === id) {
+          return { 
+            ...task, 
+            isDone: !task.isDone,
+            completedAt: !task.isDone ? new Date().toISOString() : null
+          };
+        }
+        return task;
+      })
+    );
+  };
+
+  // Фильтруем задачи для отображения
+  const visibleTasks = tasks.filter(task => {
+    if (!task.isDone) return true;
+    if (task.completedAt && isToday(new Date(task.completedAt))) return true;
+    return false;
+  });
+
+  return (
+    // Главный контейнер с темным фоном и белым текстом
+    <div 
+      className="min-h-screen text-slate-200 font-sans bg-cover bg-center" 
+      style={{ backgroundImage: "url(/cork-board.jpg)" }}
+    >
+      
+      {/* Шапка приложения */}
+      <header className="bg-slate-800/50 backdrop-blur-sm p-4 border-b border-slate-700 sticky top-0 z-10">
+        <h1 className="text-3xl font-bold text-center text-white">
+          VisionBoard
+        </h1>
+      </header>
+      
+      {/* Основная часть, где будут задачи */}
+      <main className="p-4 sm:p-6 lg:p-8">
+        <div className="max-w-7xl mx-auto">
+          {/* Грид-сетка для задач */}
+          <div className="flex flex-wrap justify-center items-start gap-8 p-4">
+            <AnimatePresence>
+              {isProcessing && <TaskCardSkeleton />}
+              
+              {visibleTasks.map((task) => (
+                <TaskCard key={task.id} task={task} onToggleDone={handleToggleDone} />
+              ))}
+            </AnimatePresence>
+          </div>
+
+          {tasks.length === 0 && !isProcessing && (
+            <div className="text-center py-20 col-span-full">
+              <h2 className="text-2xl text-slate-400">Нажмите на микрофон, чтобы добавить первую задачу!</h2>
+            </div>
+          )}
+        </div>
+      </main>
+
+      {/* Рендерим нашу кнопку и передаем ей нужные пропсы */}
+      <VoiceButton onResult={handleNewTaskFromVoice} isProcessing={isProcessing} />
+
+    </div>
+  );
+}
+
+export default App;
