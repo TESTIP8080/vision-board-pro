@@ -67,8 +67,13 @@ function parseDateFromText(text: string): { cleanText: string, date: Date } {
 function App() {
   // Состояние для хранения списка задач
   const [tasks, setTasks] = useState<Task[]>(() => {
-    const saved = localStorage.getItem('visionboard-tasks');
-    return saved ? JSON.parse(saved) : [];
+    try {
+      const saved = localStorage.getItem('visionboard-tasks');
+      return saved ? JSON.parse(saved) : [];
+    } catch (error) {
+      console.error('Error loading tasks from localStorage:', error);
+      return [];
+    }
   });
   // Состояние для индикации загрузки (когда генерируется картинка)
   const [isProcessing, setIsProcessing] = useState(false);
@@ -77,7 +82,11 @@ function App() {
 
   // Сохраняем задачи в localStorage при каждом изменении
   useEffect(() => {
-    localStorage.setItem('visionboard-tasks', JSON.stringify(tasks));
+    try {
+      localStorage.setItem('visionboard-tasks', JSON.stringify(tasks));
+    } catch (error) {
+      console.error('Error saving tasks to localStorage:', error);
+    }
   }, [tasks]);
 
   // Запрос разрешения на уведомления при загрузке
@@ -300,7 +309,7 @@ function App() {
           </div>
         </div>
         {/* Виджет времени и погоды */}
-        <div className="fixed top-4 right-4 z-50 flex flex-col items-end gap-2">
+        <div className="fixed top-4 right-4 z-50 flex items-center gap-2">
           <div className="bg-white/80 rounded-lg px-4 py-2 shadow text-slate-800 font-mono text-lg">
             {now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
           </div>

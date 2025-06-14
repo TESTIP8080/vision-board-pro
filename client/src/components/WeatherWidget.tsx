@@ -16,12 +16,12 @@ export function WeatherWidget() {
     <div className={`bg-white/80 rounded-lg shadow overflow-hidden transition-opacity duration-300 ${isLoaded ? 'opacity-100' : 'opacity-0'}`}>
       <iframe
         src="https://wttr.in/Bishkek?format=%l:+%c+%t&lang=ru"
-        width="180"
-        height="40"
+        width="140"
+        height="32"
         style={{ border: 0 }}
         title="Погода"
         loading="lazy"
-        className="w-[180px] h-[40px]"
+        className="w-[140px] h-[32px]"
         onLoad={() => setIsLoaded(true)}
       />
     </div>
