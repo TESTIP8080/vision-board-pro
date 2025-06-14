@@ -97,6 +97,30 @@ function App() {
     }
   }, []);
 
+  // Напоминание о задачах на сегодня
+  useEffect(() => {
+    const today = new Date();
+    const todayTasks = tasks.filter(task => isToday(new Date(task.createdAt)));
+    if (todayTasks.length > 0) {
+      // Push-уведомление
+      if ('Notification' in window && Notification.permission === 'granted') {
+        new Notification('Задачи на сегодня', {
+          body: todayTasks.map(t => t.text).join('\n'),
+        });
+      }
+      // Звук
+      const audio = new Audio('https://cdn.pixabay.com/audio/2022/07/26/audio_124bfa4c3e.mp3');
+      audio.play().catch(() => {});
+    }
+  }, []);
+
+  // Виджет времени
+  const [now, setNow] = useState(new Date());
+  useEffect(() => {
+    const timer = setInterval(() => setNow(new Date()), 1000);
+    return () => clearInterval(timer);
+  }, []);
+
   // Функция, которая создает задачу
   const handleNewTaskFromVoice = async (text: string) => {
     const { cleanText: taskText, date: taskDate } = parseDateFromText(text);
@@ -284,6 +308,21 @@ function App() {
               )}
             </div>
           </div>
+        </div>
+        {/* Виджет времени и погоды */}
+        <div className="fixed top-4 right-4 z-50 flex flex-col items-end gap-2">
+          <div className="bg-white/80 rounded-lg px-4 py-2 shadow text-slate-800 font-mono text-lg">
+            {now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+          </div>
+          <iframe
+            src="https://www.meteoservice.ru/informer/vertical/49917/1"
+            width="120"
+            height="180"
+            style={{ border: 0 }}
+            title="Погода"
+            loading="lazy"
+            className="rounded-lg shadow"
+          ></iframe>
         </div>
       </main>
 
