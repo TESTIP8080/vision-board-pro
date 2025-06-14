@@ -6,6 +6,7 @@ import { TaskCardSkeleton } from './components/TaskCardSkeleton'; // Импор�
 import { AnimatePresence } from 'framer-motion'; // Импортируем AnimatePresence для анимации
 import type { Task } from './types'; // <-- Импортируем из правильного места!
 import { addDays, isToday } from 'date-fns';
+import { Calendar } from './components/Calendar';
 
 // URL нашего сервера
 // const API_URL = '/api';
@@ -215,63 +216,74 @@ function App() {
       {/* Основная часть, где будут задачи */}
       <main className="p-4 sm:p-6 lg:p-8">
         <div className="max-w-7xl mx-auto">
-          {/* Форма для текстового ввода задачи */}
-          <form onSubmit={handleAddTask} className="flex gap-2 mb-4 max-w-xl mx-auto">
-            <input
-              type="text"
-              className="flex-1 rounded-lg px-4 py-2 border border-slate-300 focus:outline-none focus:ring-2 focus:ring-blue-400 text-black"
-              placeholder="Введите задачу или желание..."
-              value={inputValue}
-              onChange={e => setInputValue(e.target.value)}
-              disabled={isProcessing}
-            />
-            <button
-              type="submit"
-              className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-semibold disabled:opacity-50"
-              disabled={isProcessing || !inputValue.trim()}
-            >
-              Добавить
-            </button>
-          </form>
-          {/* Адаптивная сетка карточек */}
-          <div>
-            {/* Мобильная версия: горизонтальный скролл */}
-            <div className="block sm:hidden overflow-x-auto pb-4">
-              <div className="flex space-x-4 min-w-[320px]">
-                <AnimatePresence>
-                  {isProcessing && <TaskCardSkeleton />}
-                  {visibleTasks.slice(0, 3).map((task) => (
-                    <TaskCard key={task.id} task={task} onToggleDone={handleToggleDone} onDelete={handleDeleteTask} />
-                  ))}
-                </AnimatePresence>
-              </div>
+          {/* Календарь: сверху на мобильных, сбоку на десктопе */}
+          <div className="block sm:hidden mb-4">
+            <Calendar tasks={tasks} />
+          </div>
+          <div className="flex">
+            <div className="hidden sm:block mr-8 min-w-[340px]">
+              <Calendar tasks={tasks} />
             </div>
-            {/* Мобильная версия: остальные карточки — ниже */}
-            <div className="block sm:hidden mt-2">
-              <div className="flex flex-wrap gap-4">
-                <AnimatePresence>
-                  {visibleTasks.slice(3).map((task) => (
-                    <TaskCard key={task.id} task={task} onToggleDone={handleToggleDone} onDelete={handleDeleteTask} />
-                  ))}
-                </AnimatePresence>
+            <div className="flex-1">
+              {/* Форма для текстового ввода задачи */}
+              <form onSubmit={handleAddTask} className="flex gap-2 mb-4 max-w-xl mx-auto">
+                <input
+                  type="text"
+                  className="flex-1 rounded-lg px-4 py-2 border border-slate-300 focus:outline-none focus:ring-2 focus:ring-blue-400 text-black"
+                  placeholder="Введите задачу или желание..."
+                  value={inputValue}
+                  onChange={e => setInputValue(e.target.value)}
+                  disabled={isProcessing}
+                />
+                <button
+                  type="submit"
+                  className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-semibold disabled:opacity-50"
+                  disabled={isProcessing || !inputValue.trim()}
+                >
+                  Добавить
+                </button>
+              </form>
+              {/* Адаптивная сетка карточек */}
+              <div>
+                {/* Мобильная версия: горизонтальный скролл */}
+                <div className="block sm:hidden overflow-x-auto pb-4">
+                  <div className="flex space-x-4 min-w-[320px]">
+                    <AnimatePresence>
+                      {isProcessing && <TaskCardSkeleton />}
+                      {visibleTasks.slice(0, 3).map((task) => (
+                        <TaskCard key={task.id} task={task} onToggleDone={handleToggleDone} onDelete={handleDeleteTask} />
+                      ))}
+                    </AnimatePresence>
+                  </div>
+                </div>
+                {/* Мобильная версия: остальные карточки — ниже */}
+                <div className="block sm:hidden mt-2">
+                  <div className="flex flex-wrap gap-4">
+                    <AnimatePresence>
+                      {visibleTasks.slice(3).map((task) => (
+                        <TaskCard key={task.id} task={task} onToggleDone={handleToggleDone} onDelete={handleDeleteTask} />
+                      ))}
+                    </AnimatePresence>
+                  </div>
+                </div>
+                {/* Десктопная версия: обычная сетка */}
+                <div className="hidden sm:flex flex-wrap justify-center items-start gap-8 p-4">
+                  <AnimatePresence>
+                    {isProcessing && <TaskCardSkeleton />}
+                    {visibleTasks.map((task) => (
+                      <TaskCard key={task.id} task={task} onToggleDone={handleToggleDone} onDelete={handleDeleteTask} />
+                    ))}
+                  </AnimatePresence>
+                </div>
               </div>
-            </div>
-            {/* Десктопная версия: обычная сетка */}
-            <div className="hidden sm:flex flex-wrap justify-center items-start gap-8 p-4">
-              <AnimatePresence>
-                {isProcessing && <TaskCardSkeleton />}
-                {visibleTasks.map((task) => (
-                  <TaskCard key={task.id} task={task} onToggleDone={handleToggleDone} onDelete={handleDeleteTask} />
-                ))}
-              </AnimatePresence>
+
+              {tasks.length === 0 && !isProcessing && (
+                <div className="text-center py-20 col-span-full">
+                  <h2 className="text-2xl text-slate-400">Нажмите на микрофон, чтобы добавить первую задачу!</h2>
+                </div>
+              )}
             </div>
           </div>
-
-          {tasks.length === 0 && !isProcessing && (
-            <div className="text-center py-20 col-span-full">
-              <h2 className="text-2xl text-slate-400">Нажмите на микрофон, чтобы добавить первую задачу!</h2>
-            </div>
-          )}
         </div>
       </main>
 
