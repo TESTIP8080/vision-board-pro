@@ -121,13 +121,17 @@ function App() {
   });
 
   return (
-    // Главный контейнер с темным фоном и белым текстом
     <div 
       className="min-h-screen text-slate-200 font-sans bg-cover bg-center" 
       style={{ backgroundImage: "url(/cork-board.jpg)" }}
     >
-      
-      {/* Шапка приложения */}
+      {/* Loader поверх всего */}
+      {isProcessing && (
+        <div className="fixed inset-0 bg-black/60 flex flex-col items-center justify-center z-50">
+          <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-blue-400 mb-6"></div>
+          <p className="text-white text-xl font-semibold">Генерируем картинку...<br/>Пожалуйста, подождите</p>
+        </div>
+      )}
       <header className="bg-slate-800/50 backdrop-blur-sm p-4 border-b border-slate-700 sticky top-0 z-10">
         <h1 className="text-3xl font-bold text-center text-white">
           VisionBoard
