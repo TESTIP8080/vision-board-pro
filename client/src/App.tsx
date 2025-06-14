@@ -121,6 +121,15 @@ function App() {
     return () => clearInterval(timer);
   }, []);
 
+  // Для адаптива: определяем мобильное устройство
+  const [isMobile, setIsMobile] = useState(false);
+  useEffect(() => {
+    const checkMobile = () => setIsMobile(window.matchMedia('(max-width: 640px)').matches);
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
+
   // Функция, которая создает задачу
   const handleNewTaskFromVoice = async (text: string) => {
     const { cleanText: taskText, date: taskDate } = parseDateFromText(text);
@@ -238,8 +247,14 @@ function App() {
           )}
         </div>
       )}
-      <header className="absolute top-6 left-8 z-50">
-        <span className="text-base font-bold tracking-tight text-[#b0b0b0] select-none lowercase" style={{letterSpacing: '0.04em', fontFamily: 'Inter, Arial, sans-serif'}}>visionboard</span>
+      <header className={isMobile ? "absolute top-20 left-4 z-50" : "absolute top-6 left-8 z-50"}>
+        {isMobile ? (
+          <span className="text-base font-bold tracking-tight text-[#b0b0b0] select-none lowercase leading-tight block" style={{letterSpacing: '0.04em', fontFamily: 'Inter, Arial, sans-serif', lineHeight: '1.1'}}>
+            vision<br/>board
+          </span>
+        ) : (
+          <span className="text-base font-bold tracking-tight text-[#b0b0b0] select-none lowercase" style={{letterSpacing: '0.04em', fontFamily: 'Inter, Arial, sans-serif'}}>visionboard</span>
+        )}
       </header>
       
       {/* Основная часть */}
@@ -247,7 +262,7 @@ function App() {
         {/* Маленький виджет погоды и времени справа сверху */}
         <div className="fixed top-4 right-4 z-50 flex items-center gap-2">
           <WeatherWidget />
-          <div className="bg-white rounded-lg px-4 py-2 shadow text-slate-800 font-mono text-base font-semibold flex items-center">
+          <div className="bg-white rounded-lg px-4 py-2 shadow text-slate-800 font-mono text-base font-semibold flex items-center min-w-[90px] justify-center" style={{fontSize: '1.25rem', height: '40px'}}>
             <span>{now.toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit', second: '2-digit' })}</span>
             <span className="ml-2 text-xs text-[#b0b0b0]">Бишкек</span>
           </div>
@@ -278,9 +293,11 @@ function App() {
             </div>
           </div>
         </div>
-        {/* Микрофон — справа снизу, между календарём и формой */}
-        <div className="fixed right-4 bottom-24 z-50">
-          <VoiceButton onResult={handleNewTaskFromVoice} isProcessing={isProcessing} />
+        {/* Микрофон — всегда по центру внизу, над формой */}
+        <div className="fixed left-1/2 -translate-x-1/2 bottom-24 z-50 flex justify-center w-full pointer-events-none">
+          <div className="pointer-events-auto">
+            <VoiceButton onResult={handleNewTaskFromVoice} isProcessing={isProcessing} />
+          </div>
         </div>
         {/* Форма ввода задачи — всегда в самом низу */}
         <div className="fixed bottom-0 left-0 w-full px-2 z-50 bg-[#f5f6fa] pb-2 pt-2 flex justify-center">
