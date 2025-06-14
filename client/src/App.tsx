@@ -79,6 +79,7 @@ function App() {
   const [isProcessing, setIsProcessing] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [inputValue, setInputValue] = useState('');
+  const [selectedDate, setSelectedDate] = useState<Date | null>(null);
 
   // Сохраняем задачи в localStorage при каждом изменении
   useEffect(() => {
@@ -194,6 +195,13 @@ function App() {
 
   // Фильтруем задачи для отображения
   const visibleTasks = tasks.filter(task => {
+    if (selectedDate) {
+      // Фильтрация по выбранной дате (только день, месяц, год)
+      const tDate = new Date(task.createdAt);
+      return tDate.getDate() === selectedDate.getDate() &&
+        tDate.getMonth() === selectedDate.getMonth() &&
+        tDate.getFullYear() === selectedDate.getFullYear();
+    }
     if (!task.isDone) return true;
     if (task.completedAt && isToday(new Date(task.completedAt))) return true;
     return false;
@@ -235,23 +243,36 @@ function App() {
       </header>
       
       {/* Основная часть, где будут задачи */}
-      <main className="relative min-h-screen flex flex-col justify-center items-center overflow-x-hidden bg-[#f5f6fa]">
+      <main className="relative min-h-screen flex flex-col justify-center items-center overflow-x-hidden bg-[#f5f6fa] pb-32">
         <div className="max-w-7xl w-full px-2 sm:px-8 mx-auto flex flex-col sm:flex-row gap-8 mt-20">
           {/* Календарь как отдельная карточка */}
           <div className="flex-shrink-0 w-full sm:w-[340px]">
-            <Calendar tasks={tasks} />
+            <Calendar tasks={tasks} onDayClick={date => setSelectedDate(date)} />
+            {selectedDate && (
+              <button
+                className="mt-2 px-4 py-2 rounded-lg bg-[#ff4c00] text-white font-bold w-full"
+                onClick={() => setSelectedDate(null)}
+              >
+                Показать все задачи
+              </button>
+            )}
           </div>
-          {/* Задачи — карточки */}
-          <div className="flex-1 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {visibleTasks.map((task) => (
-              <TaskCard key={task.id} task={task} onToggleDone={handleToggleDone} onDelete={handleDeleteTask} />
-            ))}
-            {isProcessing && <TaskCardSkeleton />}
+          {/* Задачи — карточки, скроллируемый блок */}
+          <div className="flex-1 max-h-[calc(100vh-220px)] overflow-y-auto pr-2">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+              {visibleTasks.map((task) => (
+                <TaskCard key={task.id} task={task} onToggleDone={handleToggleDone} onDelete={handleDeleteTask} />
+              ))}
+              {isProcessing && <TaskCardSkeleton />}
+              {visibleTasks.length === 0 && !isProcessing && (
+                <div className="text-center text-[#222] col-span-full py-10 text-lg">Нет задач на выбранный день</div>
+              )}
+            </div>
           </div>
         </div>
         {/* Форма ввода задачи — отдельная карточка снизу */}
-        <div className="fixed bottom-8 left-1/2 -translate-x-1/2 w-full max-w-xl px-2">
-          <form onSubmit={handleAddTask} className="flex gap-2 bg-white rounded-2xl shadow-lg border border-[#ececec] px-4 py-3">
+        <div className="fixed bottom-4 left-1/2 -translate-x-1/2 w-full max-w-xl px-2 z-50 flex items-end">
+          <form onSubmit={handleAddTask} className="flex gap-2 bg-white rounded-2xl shadow-lg border border-[#ececec] px-4 py-3 flex-1">
             <input
               type="text"
               className="flex-1 rounded-xl px-4 py-2 border border-[#ececec] focus:outline-none focus:ring-2 focus:ring-[#b0b0b0] text-black bg-[#f8f8fa] placeholder:text-[#b0b0b0] text-base font-medium"
@@ -268,12 +289,12 @@ function App() {
               Добавить
             </button>
           </form>
+          {/* Микрофон — маленький и сдвинутый */}
+          <div className="ml-2 mb-1">
+            <VoiceButton onResult={handleNewTaskFromVoice} isProcessing={isProcessing} />
+          </div>
         </div>
       </main>
-
-      {/* Рендерим нашу кнопку и передаем ей нужные пропсы */}
-      <VoiceButton onResult={handleNewTaskFromVoice} isProcessing={isProcessing} />
-
     </div>
   );
 }
