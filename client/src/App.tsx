@@ -8,7 +8,7 @@ import type { Task } from './types'; // <-- Импортируем из прав
 import { addDays, isToday } from 'date-fns';
 
 // URL нашего сервера
-const API_URL = 'http://localhost:3001';
+const API_URL = '/api';
 
 // Определяем, как будет выглядеть объект задачи
 export interface Task {
