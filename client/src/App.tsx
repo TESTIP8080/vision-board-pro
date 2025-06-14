@@ -231,84 +231,43 @@ function App() {
         </div>
       )}
       <header className="absolute top-6 left-8 z-50">
-        <span className="text-5xl font-extrabold tracking-tight text-[#ff4c00] select-none" style={{letterSpacing: '0.04em', fontFamily: 'Arial Black, Arial, sans-serif'}}>VisionBoard</span>
+        <span className="text-base font-bold tracking-tight text-[#b0b0b0] select-none lowercase" style={{letterSpacing: '0.04em', fontFamily: 'Inter, Arial, sans-serif'}}>visionboard</span>
       </header>
       
       {/* Основная часть, где будут задачи */}
-      <main className="relative min-h-screen flex flex-col justify-center items-center overflow-x-hidden bg-[#fdf6ee]">
-        <div className="max-w-7xl w-full px-2 sm:px-8 mx-auto">
-          {/* Календарь: сверху на мобильных, сбоку на десктопе */}
-          <div className="block sm:hidden mb-4">
+      <main className="relative min-h-screen flex flex-col justify-center items-center overflow-x-hidden bg-[#f5f6fa]">
+        <div className="max-w-7xl w-full px-2 sm:px-8 mx-auto flex flex-col sm:flex-row gap-8 mt-20">
+          {/* Календарь как отдельная карточка */}
+          <div className="flex-shrink-0 w-full sm:w-[340px]">
             <Calendar tasks={tasks} />
           </div>
-          <div className="flex flex-col sm:flex-row">
-            <div className="hidden sm:block mr-8 min-w-[340px]">
-              <Calendar tasks={tasks} />
-            </div>
-            <div className="flex-1">
-              {/* Форма для текстового ввода задачи */}
-              <form onSubmit={handleAddTask} className="flex gap-2 mb-4 max-w-xl mx-auto bg-white rounded-xl border-4 border-[#ff4c00] px-4 py-3">
-                <input
-                  type="text"
-                  className="flex-1 rounded-lg px-4 py-2 border-2 border-[#ff4c00] focus:outline-none focus:ring-2 focus:ring-[#ff4c00] text-black bg-white placeholder:text-[#ff4c00] text-lg font-bold"
-                  placeholder="Введите задачу или желание..."
-                  value={inputValue}
-                  onChange={e => setInputValue(e.target.value)}
-                  disabled={isProcessing}
-                />
-                <button
-                  type="submit"
-                  className="bg-[#ff4c00] hover:bg-[#ff7f50] text-white px-6 py-2 rounded-lg font-extrabold text-lg transition-all duration-200 disabled:opacity-50"
-                  disabled={isProcessing || !inputValue.trim()}
-                >
-                  Добавить
-                </button>
-              </form>
-              {/* Адаптивная сетка карточек */}
-              <div>
-                {/* Мобильная версия: горизонтальный скролл */}
-                <div className="block sm:hidden overflow-x-auto pb-4 -mx-4 px-4">
-                  <div className="flex space-x-4 min-w-[320px]">
-                    <AnimatePresence>
-                      {isProcessing && <TaskCardSkeleton />}
-                      {visibleTasks.slice(0, 3).map((task) => (
-                        <TaskCard key={task.id} task={task} onToggleDone={handleToggleDone} onDelete={handleDeleteTask} />
-                      ))}
-                    </AnimatePresence>
-                  </div>
-                </div>
-                {/* Мобильная версия: остальные карточки — ниже */}
-                <div className="block sm:hidden mt-2">
-                  <div className="flex flex-wrap gap-4">
-                    <AnimatePresence>
-                      {visibleTasks.slice(3).map((task) => (
-                        <TaskCard key={task.id} task={task} onToggleDone={handleToggleDone} onDelete={handleDeleteTask} />
-                      ))}
-                    </AnimatePresence>
-                  </div>
-                </div>
-                {/* Десктопная версия: обычная сетка */}
-                <div className="hidden sm:flex flex-wrap justify-center items-start gap-8 p-4">
-                  <AnimatePresence>
-                    {isProcessing && <TaskCardSkeleton />}
-                    {visibleTasks.map((task) => (
-                      <TaskCard key={task.id} task={task} onToggleDone={handleToggleDone} onDelete={handleDeleteTask} />
-                    ))}
-                  </AnimatePresence>
-                </div>
-              </div>
-
-              {tasks.length === 0 && !isProcessing && (
-                <div className="text-center py-20 col-span-full">
-                  <h2 className="text-2xl text-white drop-shadow-lg">Нажмите на микрофон, чтобы добавить первую задачу!</h2>
-                </div>
-              )}
-            </div>
+          {/* Задачи — карточки */}
+          <div className="flex-1 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            {visibleTasks.map((task) => (
+              <TaskCard key={task.id} task={task} onToggleDone={handleToggleDone} onDelete={handleDeleteTask} />
+            ))}
+            {isProcessing && <TaskCardSkeleton />}
           </div>
         </div>
-        {/* Виджет погоды */}
-        <div className="fixed top-4 right-4 z-50">
-          <WeatherWidget />
+        {/* Форма ввода задачи — отдельная карточка снизу */}
+        <div className="fixed bottom-8 left-1/2 -translate-x-1/2 w-full max-w-xl px-2">
+          <form onSubmit={handleAddTask} className="flex gap-2 bg-white rounded-2xl shadow-lg border border-[#ececec] px-4 py-3">
+            <input
+              type="text"
+              className="flex-1 rounded-xl px-4 py-2 border border-[#ececec] focus:outline-none focus:ring-2 focus:ring-[#b0b0b0] text-black bg-[#f8f8fa] placeholder:text-[#b0b0b0] text-base font-medium"
+              placeholder="Введите задачу или желание..."
+              value={inputValue}
+              onChange={e => setInputValue(e.target.value)}
+              disabled={isProcessing}
+            />
+            <button
+              type="submit"
+              className="bg-[#222] hover:bg-[#ff4c00] text-white px-5 py-2 rounded-xl font-bold text-base transition-all duration-200 disabled:opacity-50"
+              disabled={isProcessing || !inputValue.trim()}
+            >
+              Добавить
+            </button>
+          </form>
         </div>
       </main>
 
