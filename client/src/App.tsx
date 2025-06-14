@@ -1,4 +1,5 @@
-import { useState, useEffect, FormEvent } from 'react';
+import { useState, useEffect } from 'react';
+import type { FormEvent } from 'react';
 import './index.css'; // Убедимся, что наши Tailwind стили подключены
 import { VoiceButton } from './components/VoiceButton'; // Импортируем нашу кнопку
 import { TaskCard } from './components/TaskCard'; // Импортируем карточку задачи
@@ -7,21 +8,10 @@ import { AnimatePresence } from 'framer-motion'; // Импортируем Anima
 import type { Task } from './types'; // <-- Импортируем из правильного места!
 import { addDays, isToday } from 'date-fns';
 import { Calendar } from './components/Calendar';
+import { WeatherWidget } from './components/WeatherWidget';
 
 // URL нашего сервера
 // const API_URL = '/api';
-
-// Определяем, как будет выглядеть объект задачи
-export interface Task {
-  id: number;
-  text: string;
-  imageUrl: string;
-  isDone: boolean;
-  rotation: number;
-  scale: number;
-  createdAt: string;
-  completedAt: string | null;
-}
 
 const MONTHS_RU = [
   'января', 'февраля', 'марта', 'апреля', 'мая', 'июня',
@@ -314,15 +304,7 @@ function App() {
           <div className="bg-white/80 rounded-lg px-4 py-2 shadow text-slate-800 font-mono text-lg">
             {now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
           </div>
-          <iframe
-            src="https://www.meteoservice.ru/informer/vertical/49917/1"
-            width="120"
-            height="180"
-            style={{ border: 0 }}
-            title="Погода"
-            loading="lazy"
-            className="rounded-lg shadow"
-          ></iframe>
+          <WeatherWidget />
         </div>
       </main>
 
