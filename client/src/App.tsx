@@ -22,6 +22,57 @@ export interface Task {
   completedAt: string | null;
 }
 
+const MONTHS_RU = [
+  'января', 'февраля', 'марта', 'апреля', 'мая', 'июня',
+  'июля', 'августа', 'сентября', 'октября', 'ноября', 'декабря'
+];
+
+function parseDateFromText(text: string): { cleanText: string, date: Date } {
+  let cleanText = text;
+  let date = new Date();
+  const lower = text.toLowerCase();
+
+  if (lower.includes('послезавтра')) {
+    cleanText = cleanText.replace(/послезавтра/gi, '').trim();
+    date = addDays(new Date(), 2);
+    return { cleanText, date };
+  }
+  if (lower.includes('завтра')) {
+    cleanText = cleanText.replace(/завтра/gi, '').trim();
+    date = addDays(new Date(), 1);
+    return { cleanText, date };
+  }
+  // 20-го, 5-го и т.д.
+  const dayMatch = lower.match(/(\d{1,2})[-\s]?(го|е|я)?/);
+  if (dayMatch && !lower.match(/\d{1,2} (января|февраля|марта|апреля|мая|июня|июля|августа|сентября|октября|ноября|декабря)/)) {
+    const day = parseInt(dayMatch[1], 10);
+    const now = new Date();
+    let month = now.getMonth();
+    let year = now.getFullYear();
+    if (day < now.getDate()) {
+      month++;
+      if (month > 11) { month = 0; year++; }
+    }
+    date = new Date(year, month, day);
+    cleanText = cleanText.replace(dayMatch[0], '').trim();
+    return { cleanText, date };
+  }
+  // 15 июня, 5 мая и т.д.
+  const fullDateMatch = lower.match(/(\d{1,2}) (января|февраля|марта|апреля|мая|июня|июля|августа|сентября|октября|ноября|декабря)/);
+  if (fullDateMatch) {
+    const day = parseInt(fullDateMatch[1], 10);
+    const month = MONTHS_RU.indexOf(fullDateMatch[2]);
+    let year = new Date().getFullYear();
+    if (month < new Date().getMonth() || (month === new Date().getMonth() && day < new Date().getDate())) {
+      year++;
+    }
+    date = new Date(year, month, day);
+    cleanText = cleanText.replace(fullDateMatch[0], '').trim();
+    return { cleanText, date };
+  }
+  return { cleanText, date };
+}
+
 function App() {
   // Состояние для хранения списка задач
   const [tasks, setTasks] = useState<Task[]>(() => {
@@ -47,18 +98,7 @@ function App() {
 
   // Функция, которая создает задачу
   const handleNewTaskFromVoice = async (text: string) => {
-    let taskText = text;
-    let taskDate = new Date(); // По умолчанию - сегодня
-
-    // Простой парсер даты
-    if (text.toLowerCase().includes('завтра')) {
-      taskText = text.replace(/завтра/i, '').trim();
-      taskDate = addDays(new Date(), 1);
-    }
-    if (text.toLowerCase().includes('послезавтра')) {
-      taskText = text.replace(/послезавтра/i, '').trim();
-      taskDate = addDays(new Date(), 2);
-    }
+    const { cleanText: taskText, date: taskDate } = parseDateFromText(text);
 
     setIsProcessing(true);
     setErrorMessage(null);
