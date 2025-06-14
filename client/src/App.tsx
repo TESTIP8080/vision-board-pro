@@ -114,7 +114,7 @@ function App() {
     }
   }, []);
 
-  // Виджет времени
+  // Виджет времени (Бишкек)
   const [now, setNow] = useState(new Date());
   useEffect(() => {
     const timer = setInterval(() => setNow(new Date()), 1000);
@@ -244,9 +244,13 @@ function App() {
       
       {/* Основная часть */}
       <main className="relative min-h-screen flex flex-col justify-center items-center overflow-x-hidden bg-[#f5f6fa] pb-32">
-        {/* Маленький виджет погоды справа сверху */}
-        <div className="fixed top-4 right-4 z-50">
+        {/* Маленький виджет погоды и времени справа сверху */}
+        <div className="fixed top-4 right-4 z-50 flex items-center gap-2">
           <WeatherWidget />
+          <div className="bg-white rounded-lg px-4 py-2 shadow text-slate-800 font-mono text-base font-semibold flex items-center">
+            <span>{now.toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit', second: '2-digit' })}</span>
+            <span className="ml-2 text-xs text-[#b0b0b0]">Бишкек</span>
+          </div>
         </div>
         <div className="max-w-7xl w-full px-2 sm:px-8 mx-auto flex flex-col sm:flex-row gap-8 mt-20">
           {/* Календарь как отдельная карточка */}
@@ -274,9 +278,13 @@ function App() {
             </div>
           </div>
         </div>
-        {/* Форма ввода задачи — отдельная карточка снизу */}
-        <div className="fixed bottom-20 left-1/2 -translate-x-1/2 w-full max-w-xl px-2 z-50 flex items-end">
-          <form onSubmit={handleAddTask} className="flex gap-2 bg-white rounded-2xl shadow-lg border border-[#ececec] px-4 py-3 flex-1">
+        {/* Микрофон — справа снизу, между календарём и формой */}
+        <div className="fixed right-4 bottom-24 z-50">
+          <VoiceButton onResult={handleNewTaskFromVoice} isProcessing={isProcessing} />
+        </div>
+        {/* Форма ввода задачи — всегда в самом низу */}
+        <div className="fixed bottom-0 left-0 w-full px-2 z-50 bg-[#f5f6fa] pb-2 pt-2 flex justify-center">
+          <form onSubmit={handleAddTask} className="flex gap-2 bg-white rounded-2xl shadow-lg border border-[#ececec] px-4 py-3 w-full max-w-xl">
             <input
               type="text"
               className="flex-1 rounded-xl px-4 py-2 border border-[#ececec] focus:outline-none focus:ring-2 focus:ring-[#b0b0b0] text-black bg-[#f8f8fa] placeholder:text-[#b0b0b0] text-base font-medium"
@@ -293,10 +301,6 @@ function App() {
               Добавить
             </button>
           </form>
-          {/* Микрофон — маленький и сдвинутый выше */}
-          <div className="ml-2 mb-10">
-            <VoiceButton onResult={handleNewTaskFromVoice} isProcessing={isProcessing} />
-          </div>
         </div>
       </main>
     </div>
