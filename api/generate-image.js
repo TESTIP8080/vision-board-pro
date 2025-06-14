@@ -16,6 +16,7 @@ export default async function handler(req, res) {
     prompt = data.prompt;
     if (!prompt) throw new Error('No prompt');
   } catch (e) {
+    console.error('Body parse error:', e);
     return res.status(400).json({ error: 'Invalid request body' });
   }
 
