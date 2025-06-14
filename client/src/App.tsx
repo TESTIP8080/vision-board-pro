@@ -8,7 +8,7 @@ import type { Task } from './types'; // <-- Импортируем из прав
 import { addDays, isToday } from 'date-fns';
 
 // URL нашего сервера
-const API_URL = '/api';
+// const API_URL = '/api';
 
 // Определяем, как будет выглядеть объект задачи
 export interface Task {
@@ -53,7 +53,7 @@ function App() {
     setIsProcessing(true);
     try {
       console.log(`Отправляю на сервер промпт: "${taskText}"`);
-      const response = await fetch(`${API_URL}/api/generate-image`, {
+      const response = await fetch('/api/generate-image', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
