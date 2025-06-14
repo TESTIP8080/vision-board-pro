@@ -242,8 +242,12 @@ function App() {
         <span className="text-base font-bold tracking-tight text-[#b0b0b0] select-none lowercase" style={{letterSpacing: '0.04em', fontFamily: 'Inter, Arial, sans-serif'}}>visionboard</span>
       </header>
       
-      {/* Основная часть, где будут задачи */}
+      {/* Основная часть */}
       <main className="relative min-h-screen flex flex-col justify-center items-center overflow-x-hidden bg-[#f5f6fa] pb-32">
+        {/* Маленький виджет погоды справа сверху */}
+        <div className="fixed top-4 right-4 z-50">
+          <WeatherWidget />
+        </div>
         <div className="max-w-7xl w-full px-2 sm:px-8 mx-auto flex flex-col sm:flex-row gap-8 mt-20">
           {/* Календарь как отдельная карточка */}
           <div className="flex-shrink-0 w-full sm:w-[340px]">
