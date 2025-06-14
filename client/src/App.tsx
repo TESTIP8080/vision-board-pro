@@ -231,13 +231,18 @@ function App() {
         </div>
       )}
       <header className="bg-slate-800/50 backdrop-blur-sm p-4 border-b border-slate-700 sticky top-0 z-10">
-        <h1 className="text-3xl font-bold text-center text-white">
+        <h1 className="text-xl font-bold text-white">
           VisionBoard
         </h1>
       </header>
       
       {/* Основная часть, где будут задачи */}
-      <main className="p-4 sm:p-6 lg:p-8">
+      <main className="p-4 sm:p-6 lg:p-8 min-h-screen" style={{ 
+        backgroundImage: "url('https://images.unsplash.com/photo-1513364776144-60967b0f800f?q=80&w=2070&auto=format&fit=crop')",
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+        backgroundAttachment: 'fixed'
+      }}>
         <div className="max-w-7xl mx-auto">
           {/* Календарь: сверху на мобильных, сбоку на десктопе */}
           <div className="block sm:hidden mb-4">
@@ -252,7 +257,7 @@ function App() {
               <form onSubmit={handleAddTask} className="flex gap-2 mb-4 max-w-xl mx-auto">
                 <input
                   type="text"
-                  className="flex-1 rounded-lg px-4 py-2 border border-slate-300 focus:outline-none focus:ring-2 focus:ring-blue-400 text-black"
+                  className="flex-1 rounded-lg px-4 py-2 border border-slate-300 focus:outline-none focus:ring-2 focus:ring-blue-400 text-black bg-white/90 backdrop-blur-sm"
                   placeholder="Введите задачу или желание..."
                   value={inputValue}
                   onChange={e => setInputValue(e.target.value)}
@@ -302,17 +307,14 @@ function App() {
 
               {tasks.length === 0 && !isProcessing && (
                 <div className="text-center py-20 col-span-full">
-                  <h2 className="text-2xl text-slate-400">Нажмите на микрофон, чтобы добавить первую задачу!</h2>
+                  <h2 className="text-2xl text-white drop-shadow-lg">Нажмите на микрофон, чтобы добавить первую задачу!</h2>
                 </div>
               )}
             </div>
           </div>
         </div>
-        {/* Виджет времени и погоды */}
-        <div className="fixed top-4 right-4 z-50 flex items-center gap-2">
-          <div className="bg-white/80 rounded-lg px-4 py-2 shadow text-slate-800 font-mono text-lg">
-            {now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-          </div>
+        {/* Виджет погоды */}
+        <div className="fixed top-4 right-4 z-50">
           <WeatherWidget />
         </div>
       </main>
