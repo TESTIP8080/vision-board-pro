@@ -22,7 +22,7 @@ export function TaskCard({ task, onToggleDone, onDelete }: TaskCardProps) {
         rotate: task.rotation,
         scale: task.scale,
       }}
-      className={`relative rounded-lg overflow-hidden shadow-2xl group cursor-pointer w-60 h-60`}
+      className={`relative rounded-lg overflow-hidden shadow-2xl group cursor-pointer w-[280px] h-[280px] sm:w-60 sm:h-60`}
       onClick={() => onToggleDone(task.id)}
     >
       {/* Кнопка-гвоздик */}

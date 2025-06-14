@@ -234,7 +234,7 @@ function App() {
           <div className="block sm:hidden mb-4">
             <Calendar tasks={tasks} />
           </div>
-          <div className="flex">
+          <div className="flex flex-col sm:flex-row">
             <div className="hidden sm:block mr-8 min-w-[340px]">
               <Calendar tasks={tasks} />
             </div>
@@ -260,7 +260,7 @@ function App() {
               {/* Адаптивная сетка карточек */}
               <div>
                 {/* Мобильная версия: горизонтальный скролл */}
-                <div className="block sm:hidden overflow-x-auto pb-4">
+                <div className="block sm:hidden overflow-x-auto pb-4 -mx-4 px-4">
                   <div className="flex space-x-4 min-w-[320px]">
                     <AnimatePresence>
                       {isProcessing && <TaskCardSkeleton />}
