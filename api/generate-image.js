@@ -5,13 +5,10 @@ export default async function handler(req, res) {
 
   let prompt = '';
   try {
-    if (req.body) {
-      if (typeof req.body === 'string') {
-        prompt = JSON.parse(req.body).prompt;
-      } else {
-        prompt = req.body.prompt;
-      }
-    }
+    // Vercel serverless functions: req.body — это строка!
+    const body = typeof req.body === 'string' ? JSON.parse(req.body) : req.body;
+    prompt = body.prompt;
+    if (!prompt) throw new Error('No prompt');
   } catch (e) {
     return res.status(400).json({ error: 'Invalid request body' });
   }
