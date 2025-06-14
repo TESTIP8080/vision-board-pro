@@ -24,10 +24,18 @@ export interface Task {
 
 function App() {
   // Состояние для хранения списка задач
-  const [tasks, setTasks] = useState<Task[]>([]);
+  const [tasks, setTasks] = useState<Task[]>(() => {
+    const saved = localStorage.getItem('visionboard-tasks');
+    return saved ? JSON.parse(saved) : [];
+  });
   // Состояние для индикации загрузки (когда генерируется картинка)
   const [isProcessing, setIsProcessing] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+
+  // Сохраняем задачи в localStorage при каждом изменении
+  useEffect(() => {
+    localStorage.setItem('visionboard-tasks', JSON.stringify(tasks));
+  }, [tasks]);
 
   // Запрос разрешения на уведомления при загрузке
   useEffect(() => {
