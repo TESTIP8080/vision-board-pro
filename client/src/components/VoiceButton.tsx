@@ -83,6 +83,9 @@ export function VoiceButton({ onResult, isProcessing }: VoiceButtonProps) {
         onMouseDown={handleMouseDown}
         onMouseUp={handleMouseUp}
         onMouseLeave={handleMouseUp}
+        onTouchStart={handleMouseDown}
+        onTouchEnd={handleMouseUp}
+        onTouchCancel={handleMouseUp}
         disabled={isProcessing}
         className={`w-20 h-20 rounded-full text-white flex items-center justify-center shadow-lg transform transition-all duration-200 ${getButtonClass()}`}
       >

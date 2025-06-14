@@ -113,6 +113,10 @@ function App() {
     );
   };
 
+  const handleDeleteTask = (id: number) => {
+    setTasks(currentTasks => currentTasks.filter(task => task.id !== id));
+  };
+
   // Фильтруем задачи для отображения
   const visibleTasks = tasks.filter(task => {
     if (!task.isDone) return true;
@@ -147,7 +151,7 @@ function App() {
               {isProcessing && <TaskCardSkeleton />}
               
               {visibleTasks.map((task) => (
-                <TaskCard key={task.id} task={task} onToggleDone={handleToggleDone} />
+                <TaskCard key={task.id} task={task} onToggleDone={handleToggleDone} onDelete={handleDeleteTask} />
               ))}
             </AnimatePresence>
           </div>

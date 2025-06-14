@@ -6,9 +6,10 @@ import { ru } from 'date-fns/locale';
 interface TaskCardProps {
   task: Task;
   onToggleDone: (id: number) => void;
+  onDelete: (id: number) => void;
 }
 
-export function TaskCard({ task, onToggleDone }: TaskCardProps) {
+export function TaskCard({ task, onToggleDone, onDelete }: TaskCardProps) {
   const formattedDate = format(new Date(task.createdAt), "d MMMM 'в' HH:mm", { locale: ru });
 
   return (
@@ -26,7 +27,16 @@ export function TaskCard({ task, onToggleDone }: TaskCardProps) {
     >
       {/* Кнопка-гвоздик */}
       <div className="absolute top-[-8px] left-1/2 -translate-x-1/2 w-6 h-6 bg-red-500 rounded-full shadow-md border-2 border-white z-10"></div>
-      
+      {/* Кнопка удаления */}
+      <button
+        className="absolute top-2 right-2 z-20 w-7 h-7 bg-white/80 rounded-full flex items-center justify-center hover:bg-red-500 hover:text-white transition"
+        onClick={e => { e.stopPropagation(); onDelete(task.id); }}
+        aria-label="Удалить задачу"
+      >
+        <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+        </svg>
+      </button>
       <img 
         src={task.imageUrl} 
         alt={task.text}
