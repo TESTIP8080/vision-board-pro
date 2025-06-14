@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, FormEvent } from 'react';
 import './index.css'; // Убедимся, что наши Tailwind стили подключены
 import { VoiceButton } from './components/VoiceButton'; // Импортируем нашу кнопку
 import { TaskCard } from './components/TaskCard'; // Импортируем карточку задачи
@@ -31,6 +31,7 @@ function App() {
   // Состояние для индикации загрузки (когда генерируется картинка)
   const [isProcessing, setIsProcessing] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [inputValue, setInputValue] = useState('');
 
   // Сохраняем задачи в localStorage при каждом изменении
   useEffect(() => {
@@ -134,6 +135,15 @@ function App() {
     return false;
   });
 
+  // Обработка добавления задачи через текстовое поле
+  const handleAddTask = async (e?: FormEvent) => {
+    if (e) e.preventDefault();
+    const text = inputValue.trim();
+    if (!text) return;
+    setInputValue('');
+    await handleNewTaskFromVoice(text);
+  };
+
   return (
     <div 
       className="min-h-screen text-slate-200 font-sans bg-cover bg-center" 
@@ -165,6 +175,24 @@ function App() {
       {/* Основная часть, где будут задачи */}
       <main className="p-4 sm:p-6 lg:p-8">
         <div className="max-w-7xl mx-auto">
+          {/* Форма для текстового ввода задачи */}
+          <form onSubmit={handleAddTask} className="flex gap-2 mb-4 max-w-xl mx-auto">
+            <input
+              type="text"
+              className="flex-1 rounded-lg px-4 py-2 border border-slate-300 focus:outline-none focus:ring-2 focus:ring-blue-400 text-black"
+              placeholder="Введите задачу или желание..."
+              value={inputValue}
+              onChange={e => setInputValue(e.target.value)}
+              disabled={isProcessing}
+            />
+            <button
+              type="submit"
+              className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-semibold disabled:opacity-50"
+              disabled={isProcessing || !inputValue.trim()}
+            >
+              Добавить
+            </button>
+          </form>
           {/* Адаптивная сетка карточек */}
           <div>
             {/* Мобильная версия: горизонтальный скролл */}
