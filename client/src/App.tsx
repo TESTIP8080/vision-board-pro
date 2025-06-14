@@ -165,15 +165,38 @@ function App() {
       {/* Основная часть, где будут задачи */}
       <main className="p-4 sm:p-6 lg:p-8">
         <div className="max-w-7xl mx-auto">
-          {/* Грид-сетка для задач */}
-          <div className="flex flex-wrap justify-center items-start gap-8 p-4">
-            <AnimatePresence>
-              {isProcessing && <TaskCardSkeleton />}
-              
-              {visibleTasks.map((task) => (
-                <TaskCard key={task.id} task={task} onToggleDone={handleToggleDone} onDelete={handleDeleteTask} />
-              ))}
-            </AnimatePresence>
+          {/* Адаптивная сетка карточек */}
+          <div>
+            {/* Мобильная версия: горизонтальный скролл */}
+            <div className="block sm:hidden overflow-x-auto pb-4">
+              <div className="flex space-x-4 min-w-[320px]">
+                <AnimatePresence>
+                  {isProcessing && <TaskCardSkeleton />}
+                  {visibleTasks.slice(0, 3).map((task) => (
+                    <TaskCard key={task.id} task={task} onToggleDone={handleToggleDone} onDelete={handleDeleteTask} />
+                  ))}
+                </AnimatePresence>
+              </div>
+            </div>
+            {/* Мобильная версия: остальные карточки — ниже */}
+            <div className="block sm:hidden mt-2">
+              <div className="flex flex-wrap gap-4">
+                <AnimatePresence>
+                  {visibleTasks.slice(3).map((task) => (
+                    <TaskCard key={task.id} task={task} onToggleDone={handleToggleDone} onDelete={handleDeleteTask} />
+                  ))}
+                </AnimatePresence>
+              </div>
+            </div>
+            {/* Десктопная версия: обычная сетка */}
+            <div className="hidden sm:flex flex-wrap justify-center items-start gap-8 p-4">
+              <AnimatePresence>
+                {isProcessing && <TaskCardSkeleton />}
+                {visibleTasks.map((task) => (
+                  <TaskCard key={task.id} task={task} onToggleDone={handleToggleDone} onDelete={handleDeleteTask} />
+                ))}
+              </AnimatePresence>
+            </div>
           </div>
 
           {tasks.length === 0 && !isProcessing && (
