@@ -40,13 +40,17 @@ export default async function handler(req, res) {
 
     if (!response.ok) {
       const error = await response.json();
-      return res.status(response.status).json({ error: error.error?.message || 'OpenAI API error' });
+      console.error('OpenAI API error:', error);
+      // Fallback: возвращаем заглушку
+      return res.status(200).json({ imageUrl: 'https://dummyimage.com/300x300/eee/333&text=No+Image' });
     }
 
     const data = await response.json();
     const imageUrl = data.data[0].url;
     res.status(200).json({ imageUrl });
   } catch (err) {
-    res.status(500).json({ error: 'Failed to generate image' });
+    console.error('Server error:', err);
+    // Fallback: возвращаем заглушку
+    res.status(200).json({ imageUrl: 'https://dummyimage.com/300x300/eee/333&text=No+Image' });
   }
 } 
