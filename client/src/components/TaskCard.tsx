@@ -29,7 +29,7 @@ export function TaskCard({ task, onToggleDone, onDelete }: TaskCardProps) {
       <div className="absolute top-[-8px] left-1/2 -translate-x-1/2 w-6 h-6 bg-red-500 rounded-full shadow-md border-2 border-white z-10"></div>
       {/* Кнопка удаления */}
       <button
-        className="absolute top-2 right-2 z-20 w-7 h-7 bg-white/80 rounded-full flex items-center justify-center hover:bg-red-500 hover:text-white transition"
+        className="absolute top-2 right-2 z-20 w-7 h-7 bg-red-600 rounded-full flex items-center justify-center hover:bg-red-700 text-white shadow-lg transition"
         onClick={e => { e.stopPropagation(); onDelete(task.id); }}
         aria-label="Удалить задачу"
       >

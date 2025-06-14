@@ -27,6 +27,7 @@ function App() {
   const [tasks, setTasks] = useState<Task[]>([]);
   // Состояние для индикации загрузки (когда генерируется картинка)
   const [isProcessing, setIsProcessing] = useState(false);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   // Запрос разрешения на уведомления при загрузке
   useEffect(() => {
@@ -51,6 +52,7 @@ function App() {
     }
 
     setIsProcessing(true);
+    setErrorMessage(null);
     try {
       console.log(`Отправляю на сервер промпт: "${taskText}"`);
       const response = await fetch('/api/generate-image', {
@@ -91,7 +93,7 @@ function App() {
 
     } catch (error) {
       console.error("Произошла ошибка:", error);
-      alert("Не удалось создать задачу. Проверьте консоль разработчика (F12) и консоль сервера на наличие ошибок.");
+      setErrorMessage("Не удалось создать заметку. Попробуйте ещё раз.");
     } finally {
       setIsProcessing(false);
     }
@@ -132,8 +134,18 @@ function App() {
       {/* Loader поверх всего */}
       {isProcessing && (
         <div className="fixed inset-0 bg-black/60 flex flex-col items-center justify-center z-50">
-          <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-blue-400 mb-6"></div>
-          <p className="text-white text-xl font-semibold">Генерируем картинку...<br/>Пожалуйста, подождите</p>
+          {/* Анимация кирпичиков */}
+          <div className="flex space-x-2 mb-6">
+            <div className="w-4 h-8 bg-blue-400 animate-bounce" style={{ animationDelay: '0s' }}></div>
+            <div className="w-4 h-12 bg-blue-500 animate-bounce" style={{ animationDelay: '0.1s' }}></div>
+            <div className="w-4 h-6 bg-blue-600 animate-bounce" style={{ animationDelay: '0.2s' }}></div>
+            <div className="w-4 h-10 bg-blue-400 animate-bounce" style={{ animationDelay: '0.3s' }}></div>
+            <div className="w-4 h-8 bg-blue-500 animate-bounce" style={{ animationDelay: '0.4s' }}></div>
+          </div>
+          <p className="text-white text-xl font-semibold text-center">Генерация заметки...<br/>Пожалуйста, подождите</p>
+          {errorMessage && (
+            <p className="text-red-400 mt-4 text-center">{errorMessage}</p>
+          )}
         </div>
       )}
       <header className="bg-slate-800/50 backdrop-blur-sm p-4 border-b border-slate-700 sticky top-0 z-10">
