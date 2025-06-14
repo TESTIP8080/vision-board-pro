@@ -30,9 +30,9 @@ export function Calendar({ tasks, onDayClick }: CalendarProps) {
   const taskDates = useMemo(() => tasks.map(t => format(new Date(t.createdAt), 'yyyy-MM-dd')), [tasks]);
 
   return (
-    <div className="bg-white rounded-xl shadow-lg p-4 w-80 max-w-full mx-auto mb-6">
+    <div className="bg-white/40 backdrop-blur-xl rounded-3xl shadow-2xl p-6 w-80 max-w-full mx-auto mb-6 border border-white/30 transition-all duration-300">
       <div className="flex justify-between items-center mb-2">
-        <span className="font-bold text-lg text-slate-700">{format(today, 'LLLL yyyy', { locale: ru })}</span>
+        <span className="font-bold text-lg text-slate-700 drop-shadow">{format(today, 'LLLL yyyy', { locale: ru })}</span>
       </div>
       <div className="grid grid-cols-7 gap-1 text-center text-xs text-slate-500 mb-1">
         {['Пн','Вт','Ср','Чт','Пт','Сб','Вс'].map(d => <div key={d}>{d}</div>)}
@@ -44,10 +44,11 @@ export function Calendar({ tasks, onDayClick }: CalendarProps) {
           return (
             <button
               key={idx}
-              className={`aspect-square rounded-lg flex items-center justify-center transition
-                ${isToday(day) ? 'bg-blue-500 text-white font-bold shadow' : ''}
-                ${isTaskDay ? 'ring-2 ring-green-400' : ''}
+              className={`aspect-square rounded-xl flex items-center justify-center transition-all duration-200 font-semibold
+                ${isToday(day) ? 'bg-blue-500 text-white shadow-lg scale-110' : ''}
+                ${isTaskDay ? 'ring-2 ring-fuchsia-400' : ''}
                 ${!isCurrentMonth ? 'opacity-30' : 'hover:bg-blue-100'}
+                hover:scale-110 hover:bg-blue-100/60 focus:outline-none focus:ring-2 focus:ring-cyan-400
               `}
               onClick={() => onDayClick?.(day)}
               disabled={!isCurrentMonth}
