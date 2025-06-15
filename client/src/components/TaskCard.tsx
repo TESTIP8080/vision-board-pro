@@ -1,4 +1,5 @@
 import { motion } from 'framer-motion';
+import { useState } from 'react';
 import type { Task } from '../types';
 import { format } from 'date-fns';
 import { ru } from 'date-fns/locale';
@@ -31,6 +32,16 @@ function getEmoji(text: string) {
 }
 
 export function TaskCard({ task, onToggleDone, onDelete }: TaskCardProps) {
+  const [isHovered, setIsHovered] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
+
+  const handleDelete = () => {
+    setIsDeleting(true);
+    setTimeout(() => {
+      onDelete(task.id);
+    }, 300);
+  };
+
   const formattedDate = format(new Date(task.createdAt), "d MMMM 'в' HH:mm", { locale: ru });
 
   return (

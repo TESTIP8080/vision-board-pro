@@ -6,7 +6,7 @@ import { TaskCard } from './components/TaskCard'; // Импортируем ка
 import { TaskCardSkeleton } from './components/TaskCardSkeleton'; // Импортируем скелетную карточку
 import { AnimatePresence } from 'framer-motion'; // Импортируем AnimatePresence для анимации
 import type { Task } from './types'; // <-- Импортируем из правильного места!
-import { addDays, isToday } from 'date-fns';
+import { addDays, addMinutes, addHours } from 'date-fns';
 import { Calendar } from './components/Calendar';
 import { WeatherWidget } from './components/WeatherWidget';
 
@@ -23,6 +23,84 @@ function parseDateFromText(text: string): { cleanText: string, date: Date } {
   let date = new Date();
   const lower = text.toLowerCase();
 
+  // через X минут/часов
+  const inMinutes = lower.match(/через (\d{1,2}) ?мин(ут[аы]?|\.)?/);
+  if (inMinutes) {
+    date = addMinutes(new Date(), parseInt(inMinutes[1], 10));
+    cleanText = cleanText.replace(inMinutes[0], '').trim();
+    return { cleanText, date };
+  }
+  const inHours = lower.match(/через (\d{1,2}) ?час(а|ов)?/);
+  if (inHours) {
+    date = addHours(new Date(), parseInt(inHours[1], 10));
+    cleanText = cleanText.replace(inHours[0], '').trim();
+    return { cleanText, date };
+  }
+
+  // сегодня/завтра в HH:MM
+  const todayAt = lower.match(/сегодня в (\d{1,2}):(\d{2})/);
+  if (todayAt) {
+    date.setHours(parseInt(todayAt[1], 10), parseInt(todayAt[2], 10), 0, 0);
+    cleanText = cleanText.replace(todayAt[0], '').trim();
+    return { cleanText, date };
+  }
+  const tomorrowAt = lower.match(/завтра в (\d{1,2}):(\d{2})/);
+  if (tomorrowAt) {
+    date = addDays(new Date(), 1);
+    date.setHours(parseInt(tomorrowAt[1], 10), parseInt(tomorrowAt[2], 10), 0, 0);
+    cleanText = cleanText.replace(tomorrowAt[0], '').trim();
+    return { cleanText, date };
+  }
+
+  // 14 июня в 18:00, 20-го в 12:00
+  const fullDateTime = lower.match(/(\d{1,2}) (января|февраля|марта|апреля|мая|июня|июля|августа|сентября|октября|ноября|декабря)(?: в (\d{1,2}):(\d{2}))?/);
+  if (fullDateTime) {
+    const day = parseInt(fullDateTime[1], 10);
+    const month = MONTHS_RU.indexOf(fullDateTime[2]);
+    let year = new Date().getFullYear();
+    if (month < new Date().getMonth() || (month === new Date().getMonth() && day < new Date().getDate())) {
+      year++;
+    }
+    date = new Date(year, month, day);
+    if (fullDateTime[3] && fullDateTime[4]) {
+      date.setHours(parseInt(fullDateTime[3], 10), parseInt(fullDateTime[4], 10), 0, 0);
+    }
+    cleanText = cleanText.replace(fullDateTime[0], '').trim();
+    return { cleanText, date };
+  }
+
+  // 20-го в 12:00
+  const dayTime = lower.match(/(\d{1,2})[-\s]?(го|е|я)? в (\d{1,2}):(\d{2})/);
+  if (dayTime) {
+    const day = parseInt(dayTime[1], 10);
+    const now = new Date();
+    let month = now.getMonth();
+    let year = now.getFullYear();
+    if (day < now.getDate()) {
+      month++;
+      if (month > 11) { month = 0; year++; }
+    }
+    date = new Date(year, month, day);
+    date.setHours(parseInt(dayTime[3], 10), parseInt(dayTime[4], 10), 0, 0);
+    cleanText = cleanText.replace(dayTime[0], '').trim();
+    return { cleanText, date };
+  }
+
+  // просто "в 18:00" (сегодня или завтра)
+  const onlyTime = lower.match(/в (\d{1,2}):(\d{2})/);
+  if (onlyTime) {
+    const h = parseInt(onlyTime[1], 10);
+    const m = parseInt(onlyTime[2], 10);
+    const now = new Date();
+    date.setHours(h, m, 0, 0);
+    if (date < now) {
+      date = addDays(date, 1); // если время уже прошло — завтра
+    }
+    cleanText = cleanText.replace(onlyTime[0], '').trim();
+    return { cleanText, date };
+  }
+
+  // послезавтра, завтра, сегодня
   if (lower.includes('послезавтра')) {
     cleanText = cleanText.replace(/послезавтра/gi, '').trim();
     date = addDays(new Date(), 2);
@@ -33,6 +111,12 @@ function parseDateFromText(text: string): { cleanText: string, date: Date } {
     date = addDays(new Date(), 1);
     return { cleanText, date };
   }
+  if (lower.includes('сегодня')) {
+    cleanText = cleanText.replace(/сегодня/gi, '').trim();
+    date = new Date();
+    return { cleanText, date };
+  }
+
   // 20-го, 5-го и т.д.
   const dayMatch = lower.match(/(\d{1,2})[-\s]?(го|е|я)?/);
   if (dayMatch && !lower.match(/\d{1,2} (января|февраля|марта|апреля|мая|июня|июля|августа|сентября|октября|ноября|декабря)/)) {
@@ -48,6 +132,7 @@ function parseDateFromText(text: string): { cleanText: string, date: Date } {
     cleanText = cleanText.replace(dayMatch[0], '').trim();
     return { cleanText, date };
   }
+
   // 15 июня, 5 мая и т.д.
   const fullDateMatch = lower.match(/(\d{1,2}) (января|февраля|марта|апреля|мая|июня|июля|августа|сентября|октября|ноября|декабря)/);
   if (fullDateMatch) {
@@ -61,6 +146,7 @@ function parseDateFromText(text: string): { cleanText: string, date: Date } {
     cleanText = cleanText.replace(fullDateMatch[0], '').trim();
     return { cleanText, date };
   }
+
   return { cleanText, date };
 }
 
